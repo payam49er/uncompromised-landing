@@ -1,37 +1,29 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
-const servicesMenu: Record<string, { name: string; description: string }[]> = {
+const servicesMenu: Record<string, { name: string; description: string; to: string }[]> = {
   'AI Strategy': [
-    { name: 'AI Readiness Assessment', description: 'Evaluate your firm\'s AI maturity and identify the highest-value opportunities' },
-    { name: 'Roadmap & Governance', description: 'Build a structured, board-ready AI transformation plan' },
-    { name: 'Vendor & Model Selection', description: 'Independent guidance on choosing the right models and platforms' },
+    { name: 'AI Readiness Assessment', description: 'Evaluate your firm\'s AI maturity and identify the highest-value opportunities', to: '/features#ai-strategy' },
+    { name: 'Roadmap & Governance', description: 'Build a structured, board-ready AI transformation plan', to: '/features#ai-strategy' },
+    { name: 'Vendor & Model Selection', description: 'Independent guidance on choosing the right models and platforms', to: '/features#ai-strategy' },
   ],
   'Model Development': [
-    { name: 'Quantitative AI Models', description: 'Custom alpha generation, risk, and portfolio optimization models' },
-    { name: 'NLP & Document Intelligence', description: 'Extract signal from earnings calls, filings, and research reports' },
-    { name: 'LLM Integration', description: 'Production-grade LLM workflows tailored to financial data' },
+    { name: 'Quantitative AI Models', description: 'Custom alpha generation, risk, and portfolio optimization models', to: '/features#model-development' },
+    { name: 'NLP & Document Intelligence', description: 'Extract signal from earnings calls, filings, and research reports', to: '/features#model-development' },
+    { name: 'LLM Integration', description: 'Production-grade LLM workflows tailored to financial data', to: '/features#model-development' },
   ],
   'Compliance & Risk': [
-    { name: 'Regulatory AI Compliance', description: 'Navigate SEC, FINRA, MiFID II, and Basel III AI requirements' },
-    { name: 'Model Risk Management', description: 'SR 11-7 compliant model validation and ongoing monitoring' },
-    { name: 'AI Audit & Documentation', description: 'Complete audit trails and explainability for regulators' },
+    { name: 'Regulatory AI Compliance', description: 'Navigate SEC, FINRA, MiFID II, and Basel III AI requirements', to: '/features#compliance' },
+    { name: 'Model Risk Management', description: 'SR 11-7 compliant model validation and ongoing monitoring', to: '/features#compliance' },
+    { name: 'AI Audit & Documentation', description: 'Complete audit trails and explainability for regulators', to: '/features#compliance' },
   ],
   'Technical Advisory': [
-    { name: 'Technical Due Diligence', description: 'AI/ML stack evaluation for investments and acquisitions' },
-    { name: 'Architecture Review', description: 'Assess and harden your firm\'s AI infrastructure and data pipelines' },
-    { name: 'Team & Training', description: 'Upskill your quants, engineers, and analysts on AI best practices' },
+    { name: 'Technical Due Diligence', description: 'AI/ML stack evaluation for investments and acquisitions', to: '/features#due-diligence' },
+    { name: 'Architecture Review', description: 'Assess and harden your firm\'s AI infrastructure and data pipelines', to: '/features#due-diligence' },
+    { name: 'Team & Training', description: 'Upskill your quants, engineers, and analysts on AI best practices', to: '/features#due-diligence' },
   ],
 }
 
-const industriesMenu = [
-  { name: 'Investment Banks', description: 'AI for deal intelligence, research automation, and risk management' },
-  { name: 'Hedge Funds', description: 'Alpha generation, portfolio optimization, and systematic trading AI' },
-  { name: 'Proprietary Trading Firms', description: 'Low-latency ML pipelines and predictive signal research' },
-  { name: 'FinTech Companies', description: 'Accelerate product development with embedded AI capabilities' },
-  { name: 'Family Offices', description: 'Institutional-grade AI for portfolio oversight and reporting' },
-  { name: 'Wealth Management', description: 'Client intelligence, personalization, and compliance automation' },
-]
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
@@ -95,39 +87,12 @@ export default function Nav() {
                     <div key={category} className="nav__mega-col">
                       <p className="nav__mega-category">{category}</p>
                       {items.map(item => (
-                        <Link key={item.name} to="/features" className="nav__mega-item">
+                        <Link key={item.name} to={item.to} className="nav__mega-item">
                           <span className="nav__mega-item-name">{item.name}</span>
                           <span className="nav__mega-item-desc">{item.description}</span>
                         </Link>
                       ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Industries */}
-          <div
-            className={`nav__item${activeMenu === 'industries' ? ' nav__item--active' : ''}`}
-            onMouseEnter={() => openMenu('industries')}
-            onMouseLeave={closeMenu}
-          >
-            <button className="nav__link nav__link--dropdown">
-              Industries <ChevronDown />
-            </button>
-            {activeMenu === 'industries' && (
-              <div
-                className="nav__dropdown"
-                onMouseEnter={() => keepOpen('industries')}
-                onMouseLeave={closeMenu}
-              >
-                <div className="nav__dropdown-grid">
-                  {industriesMenu.map(item => (
-                    <Link key={item.name} to="/features" className="nav__mega-item">
-                      <span className="nav__mega-item-name">{item.name}</span>
-                      <span className="nav__mega-item-desc">{item.description}</span>
-                    </Link>
                   ))}
                 </div>
               </div>

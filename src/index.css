@@ -998,6 +998,18 @@ ul { list-style: none; }
   .footer__bottom-links { gap: 16px; }
 }
 
+/* ─── Section highlight (hash navigation) ───────────────────────────────────── */
+@keyframes section-highlight {
+  0%   { outline: 2px solid rgba(255,255,255,0.0); outline-offset: 12px; }
+  12%  { outline: 2px solid rgba(255,255,255,0.2); outline-offset: 8px; }
+  100% { outline: 2px solid rgba(255,255,255,0.0); outline-offset: 12px; }
+}
+.section--highlighted {
+  animation: section-highlight 2s ease forwards;
+  border-radius: 4px;
+  scroll-margin-top: 80px;
+}
+
 /* ─── Page hero (inner pages) ────────────────────────────────────────────── */
 .page-hero {
   background: var(--c-bg-dark);

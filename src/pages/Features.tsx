@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { FeaturesViz } from '../components/PageViz'
 
 const serviceSections = [
   {
+    id: 'ai-strategy',
     label: 'AI Strategy & Advisory',
     title: 'Know where to go before you start moving.',
     sub: 'The biggest risk in AI isn\'t building the wrong model — it\'s building the right model in the wrong context. We help your firm establish the strategic foundation that makes every subsequent AI investment defensible and compounding.',
@@ -16,6 +18,7 @@ const serviceSections = [
     ],
   },
   {
+    id: 'model-development',
     label: 'Custom Model Development',
     title: 'Models that perform in production, not just backtests.',
     sub: 'We build AI and ML models for the real-world complexity of financial data: sparse signals, non-stationary distributions, regulatory constraints, and infrastructure that can\'t afford to fail.',
@@ -29,6 +32,7 @@ const serviceSections = [
     ],
   },
   {
+    id: 'compliance',
     label: 'Regulatory & Compliance AI',
     title: 'AI that performs and survives regulatory scrutiny.',
     sub: 'A model your regulator can\'t understand is a liability, not an asset. Every engagement we lead is built with regulatory defensibility as a first-class requirement.',
@@ -42,6 +46,7 @@ const serviceSections = [
     ],
   },
   {
+    id: 'due-diligence',
     label: 'Technical Due Diligence',
     title: 'Independent assessment you can rely on.',
     sub: 'Whether you\'re evaluating an acquisition, an investment, or a technology vendor, you need an independent expert who can read the code, interrogate the data, and tell you the truth.',
@@ -96,6 +101,35 @@ const caseStudies = [
 ]
 
 export default function Features() {
+  const location = useLocation()
+  const highlightRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    const hash = location.hash.replace('#', '')
+    if (!hash) return
+
+    // Small delay lets the page render before scrolling
+    const timer = setTimeout(() => {
+      const el = document.getElementById(hash)
+      if (!el) return
+
+      const navHeight = 72
+      const top = el.getBoundingClientRect().top + window.scrollY - navHeight - 24
+      window.scrollTo({ top, behavior: 'smooth' })
+
+      // Trigger highlight — remove previous, force reflow, re-add
+      if (highlightRef.current) {
+        document.getElementById(highlightRef.current)?.classList.remove('section--highlighted')
+      }
+      el.classList.remove('section--highlighted')
+      void el.offsetWidth // reflow
+      el.classList.add('section--highlighted')
+      highlightRef.current = hash
+    }, 80)
+
+    return () => clearTimeout(timer)
+  }, [location.hash])
+
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -116,6 +150,7 @@ export default function Features() {
       {serviceSections.map((section, i) => (
         <section
           key={section.label}
+          id={section.id}
           className="features-section"
           style={i % 2 === 1 ? { background: 'var(--c-bg-alt)' } : {}}
         >

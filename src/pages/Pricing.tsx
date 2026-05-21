@@ -8,7 +8,6 @@ const emailSchema = z.string().email('Please enter a valid work email address')
 const engagements = [
   {
     name: 'AI Assessment',
-    price: 'From $25K',
     duration: '2–3 weeks',
     desc: 'A structured evaluation of your firm\'s AI maturity, opportunities, and risks — delivered as an actionable report with prioritized recommendations.',
     cta: 'Discuss scope',
@@ -25,7 +24,6 @@ const engagements = [
   },
   {
     name: 'Project Engagement',
-    price: 'From $150K',
     duration: '6–16 weeks',
     desc: 'End-to-end delivery of a defined AI project — a custom model, an NLP pipeline, a compliance framework, or a production deployment.',
     cta: 'Start a conversation',
@@ -43,7 +41,6 @@ const engagements = [
   },
   {
     name: 'Advisory Retainer',
-    price: 'Custom',
     duration: 'Ongoing',
     desc: 'Continuous senior-level AI advisory for firms navigating ongoing model governance, regulatory change, or an expanding internal AI program.',
     cta: 'Talk to our team',
@@ -78,8 +75,8 @@ const faqs = [
     a: 'No. We do not take equity in client companies and do not accept fees from technology vendors. Our recommendations are always independent. This is fundamental to how we operate.',
   },
   {
-    q: 'What makes your pricing model different?',
-    a: 'We price to outcomes, not hours. Project engagements have fixed fees tied to defined deliverables — not a time-and-materials arrangement that creates incentives to run long. If scope changes, we renegotiate transparently.',
+    q: 'How is the scope and cost of an engagement determined?',
+    a: 'Every engagement is scoped individually based on your firm\'s objectives, data environment, and timeline. After an initial discovery conversation we put together a detailed proposal outlining deliverables, timeline, and commercial terms — tailored to your situation.',
   },
   {
     q: 'Can you work with our existing internal AI team?',
@@ -127,10 +124,7 @@ export default function Pricing() {
               <div key={eng.name} className={`plan${eng.featured ? ' plan--featured' : ''}`}>
                 {eng.badge && <span className="plan__badge">{eng.badge}</span>}
                 <p className="plan__name">{eng.name}</p>
-                <div className="plan__price" style={{ fontSize: 'clamp(24px, 3vw, 34px)', letterSpacing: '-0.03em' }}>
-                  {eng.price}
-                </div>
-                <p className="plan__period">{eng.duration} · Fixed fee</p>
+                <p className="plan__period" style={{ marginBottom: 16 }}>{eng.duration}</p>
                 <p className="plan__desc">{eng.desc}</p>
                 <ul className="plan__features">
                   {eng.deliverables.map(d => (
@@ -157,22 +151,22 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* ── How we price ─────────────────────────────────────────────── */}
+      {/* ── How we work ──────────────────────────────────────────────── */}
       <section style={{ padding: '64px 0', borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
             {[
               {
-                label: 'Fixed fee, not time-and-materials',
-                desc: 'We scope carefully and price to the outcome, not the hours. No monthly invoices that drift based on who showed up to meetings.',
+                label: 'Scoped before anything begins',
+                desc: 'Every engagement starts with a discovery conversation. We agree on objectives, deliverables, and timeline before any work starts — no ambiguity.',
               },
               {
-                label: 'Outcomes or we keep working',
-                desc: 'If a project doesn\'t deliver the agreed outputs, we don\'t send a final invoice. We keep working until it does.',
+                label: 'Outcomes, not outputs',
+                desc: 'We measure success by whether your business is better off. Not by slide count, report length, or time spent. If the outcome isn\'t there, we keep working.',
               },
               {
-                label: 'No junior bait-and-switch',
-                desc: 'Senior practitioners lead and deliver every engagement. Senior hours are what you\'re paying for, and senior hours are what you get.',
+                label: 'Senior delivery, no exceptions',
+                desc: 'Senior practitioners lead and deliver every engagement. The people who scope the work are the people who do it.',
               },
             ].map(item => (
               <div key={item.label}>

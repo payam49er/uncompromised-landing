@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FeaturesViz } from '../components/PageViz'
 
 const serviceSections = [
   {
@@ -99,7 +100,8 @@ export default function Features() {
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="page-hero">
-        <div className="container">
+        <FeaturesViz />
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <p className="page-hero__label">Our Services</p>
           <h1 className="page-hero__title">
             What we do, and how we do it

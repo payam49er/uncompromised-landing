@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
+import { PricingViz } from '../components/PageViz'
 
 const emailSchema = z.string().email('Please enter a valid work email address')
 
@@ -106,7 +107,8 @@ export default function Pricing() {
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="page-hero">
-        <div className="container">
+        <PricingViz />
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <p className="page-hero__label">Engagements</p>
           <h1 className="page-hero__title">
             Structured engagements.<br />Clear outcomes.

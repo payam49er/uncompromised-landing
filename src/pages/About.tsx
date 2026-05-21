@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { z } from 'zod'
+import { AboutViz } from '../components/PageViz'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Please enter your name'),
@@ -74,7 +75,8 @@ export default function About() {
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="page-hero">
-        <div className="container">
+        <AboutViz />
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <p className="page-hero__label">Who we are</p>
           <h1 className="page-hero__title">
             Built by practitioners.<br />For practitioners.

@@ -10,6 +10,7 @@ const contactSchema = z.object({
 })
 
 type ContactForm = z.infer<typeof contactSchema>
+type FormErrors = Partial<Record<keyof ContactForm, string>>
 
 const values = [
   {
@@ -46,21 +47,24 @@ const values = [
 
 export default function About() {
   const [form, setForm] = useState<ContactForm>({ name: '', email: '', firm: '', message: '' })
-  const [errors, setErrors] = useState<Partial<ContactForm>>({})
+  const [errors, setErrors] = useState<FormErrors>({})
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const handleChange = (field: keyof ContactForm) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm(f => ({ ...f, [field]: e.target.value }))
     setErrors(er => ({ ...er, [field]: undefined }))
+    setServerError(null)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const result = contactSchema.safeParse(form)
     if (!result.success) {
-      const fieldErrors: Partial<ContactForm> = {}
+      const fieldErrors: FormErrors = {}
       result.error.errors.forEach(err => {
         const field = err.path[0] as keyof ContactForm
         fieldErrors[field] = err.message
@@ -68,7 +72,26 @@ export default function About() {
       setErrors(fieldErrors)
       return
     }
-    setSent(true)
+
+    setSubmitting(true)
+    setServerError(null)
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result.data),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Something went wrong. Please try again.')
+      }
+      setSent(true)
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -144,7 +167,7 @@ export default function About() {
       </section>
 
       {/* ── Contact form ─────────────────────────────────────────────── */}
-      <section style={{ padding: 'var(--section-y) 0', borderTop: '1px solid var(--c-border)' }}>
+      <section id="contact" style={{ padding: 'var(--section-y) 0', borderTop: '1px solid var(--c-border)' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
             <div>
@@ -155,18 +178,6 @@ export default function About() {
               <p style={{ fontSize: 15, color: 'var(--c-text-2)', lineHeight: 1.7, marginBottom: 32 }}>
                 Every engagement begins with a no-obligation discovery call. Tell us about your firm, your objectives, and where AI fits into your plans — and we'll come prepared with relevant experience and honest perspective.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {[
-                  { label: 'Email', value: 'hello@uncompromised.ai' },
-                  { label: 'New York', value: '+1 (212) 555 0190' },
-                  { label: 'London', value: '+44 20 7946 0958' },
-                ].map(c => (
-                  <div key={c.label}>
-                    <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--c-text-3)', marginBottom: 4 }}>{c.label}</p>
-                    <p style={{ fontSize: 15, color: 'var(--c-text)' }}>{c.value}</p>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div>
@@ -229,8 +240,18 @@ export default function About() {
                     {errors.message && <p style={{ fontSize: 12, color: '#e05a47' }}>{errors.message}</p>}
                   </div>
 
-                  <button type="submit" className="btn btn--dark" style={{ alignSelf: 'flex-start', padding: '12px 24px' }}>
-                    Send message
+                  {serverError && (
+                    <p style={{ fontSize: 13, color: '#e05a47', padding: '10px 14px', background: '#fff5f3', border: '1px solid #fcc', borderRadius: 8 }}>
+                      {serverError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    className="btn btn--dark"
+                    disabled={submitting}
+                    style={{ alignSelf: 'flex-start', padding: '12px 24px', opacity: submitting ? 0.6 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                  >
+                    {submitting ? 'Sending…' : 'Send message'}
                   </button>
                   <p style={{ fontSize: 12, color: 'var(--c-text-3)', lineHeight: 1.5 }}>
                     Covered by mutual NDA. We never disclose client inquiries.

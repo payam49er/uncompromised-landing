@@ -334,7 +334,7 @@ export function BlogViz() {
     lifeSpd:  0.003 + Math.random() * 0.003,
     pulse:    Math.random() < 0.08,
     pulseT:   Math.random() * Math.PI * 2,
-    vx: 0, vy: 0,
+    vx: 0,
   })
 
   const draw = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {

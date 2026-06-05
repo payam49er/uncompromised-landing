@@ -152,26 +152,104 @@ export default function Pricing() {
       </section>
 
       {/* ── How we work ──────────────────────────────────────────────── */}
-      <section style={{ padding: '64px 0', borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}>
+      <section style={{ padding: 'clamp(72px, 10vw, 120px) 0', borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)', background: 'var(--c-bg-alt)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+          <p className="section-label">Our process</p>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 'clamp(48px, 7vw, 80px)', maxWidth: 600 }}>
+            How we move from your problem to a working solution
+          </h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
               {
-                label: 'Scoped before anything begins',
-                desc: 'Every engagement starts with a discovery conversation. We agree on objectives, deliverables, and timeline before any work starts — no ambiguity.',
+                step: '01',
+                title: 'We start by listening — deeply',
+                body: [
+                  'Before we offer a single opinion, we invest time in genuinely understanding your situation. That means understanding your firm\'s structure, the regulatory environment you operate in, your data infrastructure, your internal capabilities, and — critically — the specific problem you\'re trying to solve.',
+                  'Most consulting engagements fail not because of poor execution, but because the wrong problem was scoped. We refuse to let that happen. Our senior practitioners ask hard questions, push back on assumptions, and challenge the framing of the problem itself. We have seen enough financial institutions make expensive AI mistakes to know that clarity at the outset is worth more than speed.',
+                ],
               },
               {
-                label: 'Outcomes, not outputs',
-                desc: 'We measure success by whether your business is better off. Not by slide count, report length, or time spent. If the outcome isn\'t there, we keep working.',
+                step: '02',
+                title: 'We examine the problem from every angle',
+                body: [
+                  'Once we understand what you\'re trying to accomplish, we examine the landscape of your challenge with the rigour of someone who has to live with the consequences. We assess the technical feasibility of different approaches, the quality and accessibility of your data, the regulatory constraints that will govern the solution, and the operational reality of deploying and maintaining AI in your environment.',
+                  'This is not a box-ticking exercise. It is a genuine analytical effort — the kind that only practitioners with direct experience in quantitative finance and production AI systems can do well. We have encountered most failure modes before. We know where the hidden complexity lives, and we surface it before it becomes your problem.',
+                ],
               },
               {
-                label: 'Senior delivery, no exceptions',
-                desc: 'Senior practitioners lead and deliver every engagement. The people who scope the work are the people who do it.',
+                step: '03',
+                title: 'We propose a solution we\'re prepared to defend',
+                body: [
+                  'Our proposals are not generic. They are precise recommendations, grounded in your situation, your constraints, and your objectives. We explain our reasoning, lay out the alternatives we considered, and tell you plainly why we are recommending one path over another. We include what success looks like, how it will be measured, and what the risks are.',
+                  'If we don\'t think a proposed approach will work, we say so — and we tell you why. If the problem is more complex than initially scoped, we tell you before you commit, not after. Our reputation is built on honest counsel, and we will not compromise that to win a contract.',
+                ],
               },
-            ].map(item => (
-              <div key={item.label}>
-                <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--c-text)', marginBottom: 8, letterSpacing: '-0.01em' }}>{item.label}</p>
-                <p style={{ fontSize: 14, color: 'var(--c-text-2)', lineHeight: 1.65 }}>{item.desc}</p>
+              {
+                step: '04',
+                title: 'We align until the fit is right — for both of us',
+                body: [
+                  'We treat the scoping process as a collaboration, not a sales exercise. Once we have put a proposal in front of you, we work through it together. We refine the deliverables, adjust the timeline, revisit assumptions, and iterate until both parties are genuinely confident that the engagement is set up to succeed.',
+                  'We do not pressure clients into starting work before this alignment is complete. Rushing into execution with an ambiguous scope is one of the most common and most costly mistakes in consulting. We will not do it, even if it means a longer discovery phase. When we start, we start with clarity.',
+                ],
+              },
+              {
+                step: '05',
+                title: 'We execute — and we do not stop until it\'s done right',
+                body: [
+                  'Senior practitioners lead and deliver every engagement, without exception. The people who convinced you we were the right team are the same people building your solution. There are no handoffs to junior staff, no project managers acting as intermediaries, no distance between the people who understand your problem and the people writing the code or building the models.',
+                  'We hold ourselves accountable to the outcomes we agreed on — not to the hours we billed or the slides we produced. If something is not working, we adapt. If an approach needs to change, we change it and we tell you immediately. When we commit to a deliverable, we deliver it. That is what uncompromised means.',
+                ],
+              },
+            ].map((phase, i, arr) => (
+              <div
+                key={phase.step}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '80px 1fr',
+                  gap: '0 48px',
+                  padding: 'clamp(36px, 5vw, 56px) 0',
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--c-border)' : 'none',
+                }}
+              >
+                <div style={{ paddingTop: 4 }}>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: '0.12em',
+                    color: 'var(--c-text-3)',
+                    textTransform: 'uppercase',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>
+                    {phase.step}
+                  </span>
+                </div>
+                <div>
+                  <h3 style={{
+                    fontSize: 'clamp(18px, 2.2vw, 22px)',
+                    fontWeight: 500,
+                    letterSpacing: '-0.025em',
+                    lineHeight: 1.25,
+                    color: 'var(--c-text)',
+                    marginBottom: 20,
+                  }}>
+                    {phase.title}
+                  </h3>
+                  {phase.body.map((para, j) => (
+                    <p
+                      key={j}
+                      style={{
+                        fontSize: 15,
+                        color: 'var(--c-text-2)',
+                        lineHeight: 1.75,
+                        marginBottom: j < phase.body.length - 1 ? 16 : 0,
+                        maxWidth: 680,
+                      }}
+                    >
+                      {para}
+                    </p>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

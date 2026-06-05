@@ -1,26 +1,7 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { z } from 'zod'
 import HeroViz from '../components/HeroViz'
 
-const emailSchema = z.string().email('Please enter a valid work email address')
-
 export default function Home() {
-  const [email, setEmail] = useState('')
-  const [emailError, setEmailError] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const result = emailSchema.safeParse(email)
-    if (!result.success) {
-      setEmailError(result.error.errors[0].message)
-      return
-    }
-    setEmailError('')
-    setSubmitted(true)
-  }
-
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -34,31 +15,17 @@ export default function Home() {
             <p className="hero__sub">
               We help banks, hedge funds, trading firms, and wealth managers build, deploy, and govern AI — without compromising on performance, compliance, or trust.
             </p>
-
-            {!submitted ? (
-              <form className="hero__form" onSubmit={handleSubmit}>
-                <div className="hero__input-wrap">
-                  <input
-                    type="email"
-                    className={`hero__input${emailError ? ' hero__input--error' : ''}`}
-                    placeholder="Enter your work email"
-                    value={email}
-                    onChange={e => { setEmail(e.target.value); setEmailError('') }}
-                  />
-                  <button type="submit" className="btn btn--light">
-                    Start a conversation
-                  </button>
-                </div>
-                {emailError && <p className="hero__error">{emailError}</p>}
-                <p className="hero__disclaimer">
-                  All engagements are covered by mutual NDA. Client information is never shared.
-                </p>
-              </form>
-            ) : (
-              <div className="hero__success">
-                <p>Thank you. Our team will reach out to <strong>{email}</strong> within one business day.</p>
-              </div>
-            )}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const, marginTop: 32 }}>
+              <Link to="/about#contact" className="btn btn--light">
+                Start a conversation
+              </Link>
+              <Link to="/features" className="btn btn--ghost-light">
+                See our work
+              </Link>
+            </div>
+            <p className="hero__disclaimer" style={{ marginTop: 16 }}>
+              All engagements are covered by mutual NDA. Client information is never shared.
+            </p>
           </div>
         </div>
       </section>
@@ -126,34 +93,62 @@ export default function Home() {
       </section>
 
       {/* ── How we work ──────────────────────────────────────────────── */}
-      <section className="feature-grid alt-bg">
+      <section style={{ padding: 'clamp(72px, 10vw, 120px) 0', background: 'var(--c-bg-alt)', borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}>
         <div className="container">
           <p className="section-label">How we work</p>
-          <h2 className="section-heading">AI has been a liability for finance.<br />We make it an edge.</h2>
-          <div className="feature-grid__items">
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 500, letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 'clamp(48px, 7vw, 80px)', maxWidth: 600 }}>
+            From your problem to a working solution — without compromise
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
               {
-                title: 'We speak both languages',
-                desc: 'Our team combines deep quantitative finance expertise with state-of-the-art ML engineering. No translation layer between your domain and the technology.',
+                step: '01',
+                title: 'We start by listening — deeply',
+                body: 'Before we offer a single opinion, we invest time in genuinely understanding your situation: your firm\'s structure, the regulatory environment you operate in, your data infrastructure, your internal capabilities, and — critically — the specific problem you\'re trying to solve. Most consulting engagements fail not because of poor execution, but because the wrong problem was scoped. We refuse to let that happen.',
               },
               {
-                title: 'Compliance is not an afterthought',
-                desc: 'Every model we build is designed for regulatory scrutiny. We document assumptions, validate outputs, and produce the audit trails your compliance team requires.',
+                step: '02',
+                title: 'We examine the problem from every angle',
+                body: 'Once we understand your objective, we assess the technical feasibility of different approaches, the quality and accessibility of your data, the regulatory constraints that will govern the solution, and the operational reality of deploying AI in your environment. We have encountered most failure modes before. We know where the hidden complexity lives, and we surface it before it becomes your problem.',
               },
               {
-                title: 'We build, then transfer',
-                desc: 'We don\'t create dependency. Every engagement ends with full documentation, knowledge transfer, and optionally, training for your internal team.',
+                step: '03',
+                title: 'We propose a solution we\'re prepared to defend',
+                body: 'Our proposals are precise recommendations grounded in your situation and constraints — not generic decks. We explain our reasoning, lay out the alternatives we considered, and tell you plainly why we are recommending one path over another. If we don\'t believe a proposed approach will work, we say so, and we tell you why. Our reputation is built on honest counsel.',
               },
               {
-                title: 'Senior practitioners, not juniors',
-                desc: 'Client work is led by senior practitioners with 10+ years in quantitative finance or ML. You get senior expertise on every project — not as oversight, but as execution.',
+                step: '04',
+                title: 'We align until the fit is right — for both of us',
+                body: 'We treat scoping as a collaboration, not a sales exercise. We refine deliverables, adjust the timeline, and revisit assumptions until both parties are genuinely confident the engagement is set up to succeed. We do not pressure clients into starting work before this alignment is complete. When we start, we start with clarity.',
               },
-            ].map(f => (
-              <div key={f.title} className="feature-item">
-                <div className="feature-item__visual" />
-                <div className="feature-item__text">
-                  <h3 className="feature-item__title">{f.title}</h3>
-                  <p className="feature-item__desc">{f.desc}</p>
+              {
+                step: '05',
+                title: 'We execute — and we don\'t stop until it\'s done right',
+                body: 'Senior practitioners lead and deliver every engagement, without exception. The people who convinced you we were the right team are the same people building your solution. We hold ourselves accountable to the outcomes we agreed on — not to hours billed or slides produced. When we commit to a deliverable, we deliver it. That is what uncompromised means.',
+              },
+            ].map((phase, i, arr) => (
+              <div
+                key={phase.step}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '80px 1fr',
+                  gap: '0 48px',
+                  padding: 'clamp(32px, 4.5vw, 52px) 0',
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--c-border)' : 'none',
+                }}
+              >
+                <div style={{ paddingTop: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'var(--c-text-3)', textTransform: 'uppercase' as const }}>
+                    {phase.step}
+                  </span>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 'clamp(17px, 2vw, 21px)', fontWeight: 500, letterSpacing: '-0.025em', lineHeight: 1.25, color: 'var(--c-text)', marginBottom: 14 }}>
+                    {phase.title}
+                  </h3>
+                  <p style={{ fontSize: 15, color: 'var(--c-text-2)', lineHeight: 1.75, maxWidth: 680 }}>
+                    {phase.body}
+                  </p>
                 </div>
               </div>
             ))}
@@ -280,27 +275,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Stats ────────────────────────────────────────────────────── */}
-      <section className="stats">
-        <div className="container">
-          <h2 className="section-heading stats__heading">
-            Built by practitioners.<br />Trusted by institutions.
-          </h2>
-          <div className="stats__grid">
-            {[
-              { value: '60+', label: 'Financial institutions served' },
-              { value: '$850B+', label: 'In client AUM advised' },
-              { value: '100%', label: 'Regulatory compliance record' },
-              { value: '12+', label: 'Years average team experience' },
-            ].map(stat => (
-              <div key={stat.label} className="stat">
-                <p className="stat__value">{stat.value}</p>
-                <p className="stat__label">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── Trust ────────────────────────────────────────────────────── */}
       <section className="security alt-bg">

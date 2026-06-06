@@ -1,12 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { z } from 'zod'
 import { AboutViz } from '../components/PageViz'
 
+const FREE_EMAIL_DOMAINS = [
+  'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com',
+  'aol.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com',
+  'ymail.com', 'me.com', 'googlemail.com',
+]
+
 const contactSchema = z.object({
-  name: z.string().min(2, 'Please enter your name'),
-  email: z.string().email('Please enter a valid work email'),
-  firm: z.string().min(2, 'Please enter your firm name'),
-  message: z.string().min(10, 'Please tell us a bit about your project'),
+  name: z
+    .string()
+    .min(2, 'Please enter your full name')
+    .max(80, 'Name is too long')
+    .regex(/^[A-Za-zÀ-ÿ\s'\-]+$/, 'Please enter a valid name'),
+  email: z
+    .string()
+    .email('Please enter a valid email address')
+    .max(254, 'Email address is too long')
+    .refine(
+      val => !FREE_EMAIL_DOMAINS.includes(val.split('@')[1]?.toLowerCase() ?? ''),
+      'Please use your work email address'
+    ),
+  firm: z
+    .string()
+    .min(2, 'Please enter your firm name')
+    .max(120, 'Firm name is too long')
+    .regex(/^[A-Za-z0-9À-ÿ\s'&.,\-()]+$/, 'Please enter a valid firm name'),
+  message: z
+    .string()
+    .min(20, 'Please tell us a bit more about your project (at least 20 characters)')
+    .max(2000, 'Message is too long — please keep it under 2000 characters'),
 })
 
 type ContactForm = z.infer<typeof contactSchema>
@@ -51,6 +75,12 @@ export default function About() {
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+  const [honeypot, setHoneypot] = useState('')
+  const formOpenedAt = useRef<number>(Date.now())
+
+  useEffect(() => {
+    formOpenedAt.current = Date.now()
+  }, [])
 
   const handleChange = (field: keyof ContactForm) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -62,6 +92,13 @@ export default function About() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Honeypot: bots fill hidden fields, humans don't
+    if (honeypot) return
+
+    // Timing: legitimate users take at least 3 seconds to fill a form
+    if (Date.now() - formOpenedAt.current < 3000) return
+
     const result = contactSchema.safeParse(form)
     if (!result.success) {
       const fieldErrors: FormErrors = {}
@@ -80,7 +117,7 @@ export default function About() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result.data),
+        body: JSON.stringify({ ...result.data, website: honeypot }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
@@ -218,12 +255,18 @@ export default function About() {
                   ))}
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--c-text)' }}>How can we help?</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--c-text)' }}>How can we help?</label>
+                      <span style={{ fontSize: 11, color: form.message.length > 1800 ? '#e05a47' : 'var(--c-text-3)' }}>
+                        {form.message.length} / 2000
+                      </span>
+                    </div>
                     <textarea
                       rows={4}
                       placeholder="Tell us about your project, your data environment, or the challenge you're trying to solve..."
                       value={form.message}
                       onChange={handleChange('message')}
+                      maxLength={2000}
                       style={{
                         padding: '10px 14px',
                         border: `1px solid ${errors.message ? '#e05a47' : 'var(--c-border)'}`,
@@ -238,6 +281,18 @@ export default function About() {
                       }}
                     />
                     {errors.message && <p style={{ fontSize: 12, color: '#e05a47' }}>{errors.message}</p>}
+                  </div>
+
+                  {/* Honeypot — visually hidden, only bots fill this */}
+                  <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={e => setHoneypot(e.target.value)}
+                    />
                   </div>
 
                   {serverError && (

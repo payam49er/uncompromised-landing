@@ -17,6 +17,9 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -1030,6 +1033,10 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+    engines: {node: '>=12'}
 
   edge-runtime@2.5.9:
     resolution: {integrity: sha512-pk+k0oK0PVXdlT4oRp4lwh+unuKB7Ng4iZ2HB+EZ7QCEQizX360Rp/F4aRpgpRgdP2ufB35N+1KppHmYjqIGSg==}
@@ -2754,6 +2761,8 @@ snapshots:
       robust-predicates: 3.0.3
 
   detect-libc@2.1.2: {}
+
+  dotenv@17.4.2: {}
 
   edge-runtime@2.5.9:
     dependencies:

@@ -1,6 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Resend } from 'resend'
 import { z } from 'zod'
+import { config } from 'dotenv'
+
+// Explicitly load .env.local for local dev — no-op in production
+config({ path: '.env.local' })
 
 const contactSchema = z.object({
   name: z.string().min(2),
@@ -9,14 +13,40 @@ const contactSchema = z.object({
   message: z.string().min(10),
 })
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const TO_EMAIL = process.env.TO_EMAIL ?? 'contact@uncompromised.ai'
 
-const TO_EMAIL = process.env.TO_EMAIL ?? 'sales@brandspeak.ai'
-const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@uncompromised.ai'
+// Simple in-memory rate limiter: max 3 submissions per IP per hour
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 3
+const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
+    return false
+  }
+  if (entry.count >= RATE_LIMIT) return true
+  entry.count++
+  return false
+}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  // Rate limiting
+  const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() ?? 'unknown'
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' })
+  }
+
+  // Honeypot: reject if the hidden field was filled (bot behaviour)
+  if (req.body?.website) {
+    return res.status(200).json({ ok: true }) // Silent success to not reveal detection
   }
 
   const parsed = contactSchema.safeParse(req.body)
@@ -26,8 +56,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { name, email, firm, message } = parsed.data
 
+  // Initialize per-request so env vars are always fresh
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@uncompromised.ai'
+
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: TO_EMAIL,
       replyTo: email,
@@ -62,9 +96,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `,
     })
 
+    if (error) {
+      console.error('Resend API error:', error)
+      return res.status(500).json({ error: error.message ?? 'Failed to send email. Please try again.' })
+    }
+
+    console.log('Email sent successfully:', data?.id)
     return res.status(200).json({ ok: true })
   } catch (err) {
-    console.error('Resend error:', err)
+    console.error('Resend exception:', err)
     return res.status(500).json({ error: 'Failed to send email. Please try again.' })
   }
 }

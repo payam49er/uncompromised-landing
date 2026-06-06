@@ -11,7 +11,7 @@ const contactSchema = z.object({
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const TO_EMAIL = 'sales@brandspeak.ai'
+const TO_EMAIL = process.env.TO_EMAIL ?? 'sales@brandspeak.ai'
 const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@uncompromised.ai'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
